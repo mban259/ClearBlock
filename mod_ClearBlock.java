@@ -1,6 +1,7 @@
 package net.minecraft.src;
 
 import java.io.File;
+import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.forge.Configuration;
@@ -10,18 +11,24 @@ public class mod_ClearBlock extends BaseMod {
 	public static Block block;
 	public int blockID;
 	public String fileToOverride;
-	public String textureFilePath;
+	public String[] textureFilePath = new String[16];
+	public static int[] imageID = new int[16];
+	public static HashMap<Boolean, String> hashMap = new HashMap<Boolean, String>();
 
 	public String getVersion() {
-		return "1.0.0";
+		return "1.1.0";
 	}
 
 	public void load() {
+		hashMap.put(true, "1");
+		hashMap.put(false, "0");
 		configuration = new Configuration(new File(Minecraft.getMinecraftDir(), "config/mod_ClearBlock.cfg"));
 		blockID = LoadConfig();
 		fileToOverride = "/terrain.png";
-		textureFilePath = "texture/clearblock.png";
-		block = new ClearBlock(blockID, ModLoader.addOverride(fileToOverride, textureFilePath));
+		for (int i = 0; i < 16; i++) {
+			imageID[i] = ModLoader.addOverride(fileToOverride, "texture/" + Integer.toBinaryString(i) + ".png");
+		}
+		block = new ClearBlock(blockID, ModLoader.addOverride(fileToOverride, "texture/0.png"));
 		block.setBlockName("ClearBlock");
 		block.setResistance(5f);
 		block.setStepSound(Block.soundGlassFootstep);
@@ -31,8 +38,6 @@ public class mod_ClearBlock extends BaseMod {
 		ModLoader.addName(block, "ClearBlock");
 		ModLoader.addRecipe(new ItemStack(block, 1), new Object[] { "XXX", "XYX", "XXX", Character.valueOf('X'),
 				Block.glass, Character.valueOf('Y'), Item.diamond });
-		// ModLoader.addRecipe(new ItemStack(block, 1), new Object[] { "X",
-		// Character.valueOf('X'), Block.dirt });
 	}
 
 	private int LoadConfig() {
